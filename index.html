@@ -3,601 +3,1168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charlie Ratliff - Math & CS Portfolio</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Charlie Ratliff - Coding Portfolio</title>
     <style>
-        :root {
-            --primary-color: #2d3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --text-color: #333;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0b;
+            color: #e1e1e6;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: #f9f9f9;
+            overflow-x: hidden;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
-        /* Header Styles */
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 30px 0;
-            position: relative;
-        }
-        
-        .header-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        
-        .profile-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid white;
-            margin-bottom: 20px;
-        }
-        
-        .header-title {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .header-subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            font-weight: 300;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .social-links a {
-            color: white;
-            font-size: 2.0rem;
-            transition: color 0.3s;
-        }
-        
-        .social-links a:hover {
-            color: var(--secondary-color);
-        }
-        
+
         /* Navigation */
         nav {
-            background-color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 100;
+            width: 100%;
+            background: rgba(10, 10, 11, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
         }
-        
+
         .nav-container {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
         }
-        
-        .nav-list {
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .nav-links {
             display: flex;
             list-style: none;
+            gap: 2rem;
         }
-        
-        .nav-item {
-            padding: 20px 0;
-        }
-        
-        .nav-link {
+
+        .nav-links a {
+            color: #e1e1e6;
             text-decoration: none;
-            color: var(--dark-color);
+            transition: color 0.3s ease;
             font-weight: 500;
-            padding: 10px 20px;
-            transition: color 0.3s;
         }
-        
-        .nav-link:hover {
-            color: var(--secondary-color);
+
+        .nav-links a:hover {
+            color: #00d4ff;
         }
-        
-        /* Section Styles */
-        section {
-            padding: 60px 0;
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            background: linear-gradient(135deg, #0a0a0b 0%, #1a1a1f 100%);
         }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 40px;
-            color: var(--dark-color);
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            min-height: 1.2em;
             position: relative;
         }
-        
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 70px;
-            height: 3px;
-            background-color: var(--secondary-color);
-            margin: 10px auto;
+
+        .hero-text h1 .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 0.9em;
+            background: #00d4ff;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            opacity: 0;
+            vertical-align: text-top;
         }
-        
-        /* About Section */
-        .about-content {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 800px;
-            margin: 0 auto;
+
+        .hero-text h1 .typing-cursor.active {
+            opacity: 1;
         }
-        
-        /* Skills Section */
-        .skills-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 30px;
-        }
-        
-        .skill-category {
-            background-color: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            width: 300px;
-        }
-        
-        .category-title {
+
+        .hero-text .subtitle {
             font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 10px;
+            color: #a0a0a8;
+            margin-bottom: 2rem;
         }
-        
-        .skill-list {
-            list-style: none;
-        }
-        
-        .skill-item {
-            margin-bottom: 15px;
-        }
-        
-        .skill-name {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        
-        .skill-bar {
-            height: 8px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .skill-progress {
-            height: 100%;
-            background-color: var(--secondary-color);
-        }
-        
-        /* Projects Section */
-        .projects-grid {
+
+        .expertise-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
         }
-        
-        .project-card {
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+
+        .expertise-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
-        
-        .project-card:hover {
+
+        .expertise-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #00d4ff;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
         }
-        
-        .project-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
+
+        .expertise-card h3 {
+            color: #00d4ff;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
-        
-        .project-content {
-            padding: 20px;
-        }
-        
-        .project-title {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            color: var(--dark-color);
-        }
-        
-        .project-description {
-            margin-bottom: 15px;
-            color: #666;
-        }
-        
-        .project-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .project-tag {
-            background-color: #f0f5f9;
-            color: var(--secondary-color);
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-        
-        .project-links {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .project-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: 500;
+
+        .expertise-card p {
+            color: #a0a0a8;
             font-size: 0.9rem;
-            transition: color 0.3s;
         }
-        
-        .project-link:hover {
-            color: var(--primary-color);
-        }
-        
-        /* Research Section */
-        .research-list {
+
+        .hero-visual {
             display: flex;
-            flex-direction: column;
-            gap: 30px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        .research-item {
-            background-color: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .research-title {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            color: var(--dark-color);
-        }
-        
-        .research-meta {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .research-description {
-            margin-bottom: 15px;
-        }
-        
-        .research-link {
-            color: var(--secondary-color);
-            text-decoration: none;
-            display: inline-flex;
+            justify-content: center;
             align-items: center;
-            gap: 5px;
-            font-weight: 500;
-            transition: color 0.3s;
         }
-        
-        .research-link:hover {
-            color: var(--primary-color);
+
+        .code-snippet {
+            background: rgba(15, 15, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            position: relative;
+            overflow: hidden;
         }
-        
-        /* Contact Section */
-        .contact-content {
-            display: flex;
-            flex-direction: column;
+
+        .code-snippet::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4ff, #0099cc);
+        }
+
+        .code-line {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .keyword { color: #ff6b9d; }
+        .string { color: #4ecdc4; }
+        .function { color: #ffe66d; }
+        .comment { color: #6c757d; }
+
+        /* Work Section */
+        .work-section {
+            padding: 6rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #e1e1e6;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a8;
             max-width: 600px;
             margin: 0 auto;
         }
-        
-        .contact-text {
-            text-align: center;
-            margin-bottom: 30px;
+
+        .experience-timeline {
+            position: relative;
+            padding-left: 2rem;
         }
-        
-        .contact-methods {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 40px;
+
+        .experience-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00d4ff, #0099cc);
         }
-        
-        .contact-method {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+
+        .experience-item {
+            position: relative;
+            margin-bottom: 3rem;
+            padding-left: 3rem;
         }
-        
-        .contact-icon {
-            width: 60px;
-            height: 60px;
+
+        .experience-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 1rem;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background-color: var(--secondary-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            color: white;
+            background: #00d4ff;
+            border: 3px solid #0a0a0b;
         }
-        
-        .contact-label {
+
+        .experience-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 3rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .experience-card:hover {
+            transform: translateX(10px);
+            border-color: #00d4ff;
+        }
+
+        .company-logo {
+            position: absolute;
+            top: 50%;
+            right: 3rem;
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            transform: translateY(-50%);
+        }
+
+        .experience-card:hover .company-logo {
+            opacity: 1;
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .job-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #e1e1e6;
+        }
+
+        .company {
+            color: #00d4ff;
             font-weight: 500;
         }
-        
-        .contact-value {
-            color: #666;
-        }
-        
-        .contact-form {
-            display: grid;
-            gap: 20px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .form-label {
-            font-weight: 500;
-        }
-        
-        .form-input,
-        .form-textarea {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 1rem;
-        }
-        
-        .form-textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-        
-        .submit-btn {
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            justify-self: start;
-        }
-        
-        .submit-btn:hover {
-            background-color: var(--primary-color);
-        }
-        
-        /* Footer */
-        footer {
-            background-color: var(--dark-color);
-            color: white;
-            padding: 30px 0;
-            text-align: center;
-        }
-        
-        .footer-content {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .footer-social {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .footer-social a {
-            color: white;
-            font-size: 1.2rem;
-            transition: color 0.3s;
-        }
-        
-        .footer-social a:hover {
-            color: var(--secondary-color);
-        }
-        
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 15px 0;
-        }
-        
-        .footer-link {
-            color: #bbb;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-link:hover {
-            color: white;
-        }
-        
-        .footer-copyright {
-            color: #bbb;
+
+        .duration {
+            color: #a0a0a8;
             font-size: 0.9rem;
         }
-        
-        /* Media Queries */
+
+        .job-description {
+            color: #a0a0a8;
+            margin-bottom: 1.5rem;
+            margin-right: 5rem;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tech-tag {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        /* Optimized Featured Projects - Better Performance */
+        .featured-project {
+            padding: 8rem 0;
+            background: linear-gradient(135deg, rgba(10, 10, 11, 0.95) 0%, rgba(26, 26, 31, 0.95) 100%);
+            position: relative;
+        }
+
+        .projects-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .projects-header {
+            text-align: center;
+            margin-bottom: 6rem;
+        }
+
+        .projects-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #00d4ff, #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .projects-subtitle {
+            font-size: 1.3rem;
+            color: #a0a0a8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .projects-showcase {
+            display: grid;
+            gap: 8rem;
+        }
+
+        /* Optimized Project Layouts */
+        .project-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+            position: relative;
+        }
+
+        .project-row:nth-child(even) {
+            direction: rtl;
+        }
+
+        .project-row:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .project-content {
+            padding: 2rem 0;
+        }
+
+        .project-category {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .project-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #e1e1e6;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .project-description {
+            font-size: 1.1rem;
+            color: #a0a0a8;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .project-tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .project-tech-tag {
+            background: rgba(255, 255, 255, 0.05);
+            color: #e1e1e6;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .project-tech-tag:hover {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .project-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .project-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .project-image-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            will-change: transform;
+        }
+
+        .project-image-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Remove heavy effects for better performance */
+        .featured-project::before {
+            display: none;
+        }
+
+        .project-decoration {
+            display: none;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .contact-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #e1e1e6;
+        }
+
+        .contact-subtitle {
+            color: #a0a0a8;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #e1e1e6;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .email {
+            color: white;
+            text-decoration: none;
+            border-bottom: 2px solid #00d4ff; 
+            transition: border-color 0.3s ease;
+        }
+
+        .email:hover {
+            border-bottom: 4px solid #00d4ff;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .header-title {
-                font-size: 2rem;
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
             }
-            
-            .nav-list {
-                flex-wrap: wrap;
-                justify-content: center;
+
+            .hero-text h1 {
+                font-size: 2.5rem;
             }
-            
-            .skill-category {
-                width: 100%;
-            }
-            
-            .projects-grid {
+
+            .expertise-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .contact-methods {
-                flex-direction: column;
-                align-items: center;
+
+            .nav-links {
+                display: none;
             }
+
+            .experience-timeline {
+                padding-left: 1rem;
+            }
+
+            .experience-item {
+                padding-left: 2rem;
+            }
+
+            .experience-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .job-description {
+                margin-right: 0;
+            }
+            
+            .company-logo {
+                position: static;
+                display: block;
+                margin: 0 auto 1rem auto;
+                transform: none;
+                width: 50px;
+                height: 50px;
+            }
+
+            .project-row {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                text-align: center;
+            }
+
+            .project-row:nth-child(even) {
+                direction: ltr;
+            }
+
+            .projects-title {
+                font-size: 2.5rem;
+            }
+
+            .project-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-on-scroll {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1f;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00d4ff, #0099cc);
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00e5ff, #00bcd4);
+        }
+
+        /* Firefox scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #00d4ff #1a1a1f;
+        }
+
+        /* Custom Cursor */
+        * {
+            cursor: none;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00d4ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            will-change: transform;
+            mix-blend-mode: difference;
+        }
+
+        .cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: #00d4ff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px #00d4ff;
+        }
+
+        .cursor-follower {
+            position: fixed;
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 212, 255, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            will-change: transform;
+            transition: transform 0.15s ease-out, background-color 0.15s ease;
+        }
+
+        /* Cursor hover states */
+        .cursor.hover {
+            border-color: #ff6b9d;
+            transform: scale(1.3);
+        }
+
+        .cursor.hover::before {
+            background: #ff6b9d;
+            box-shadow: 0 0 12px #ff6b9d;
+        }
+
+        .cursor-follower.hover {
+            background: rgba(255, 107, 157, 0.12);
+            transform: scale(1.2);
+        }
+
+        .cursor.clicking {
+            transform: scale(0.7);
+            border-width: 3px;
+        }
+
+        /* Hide cursor on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .cursor,
+            .cursor-follower {
+                display: none;
+            }
+            
+            * {
+                cursor: auto;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header id="home">
-        <div class="container header-content">
-            <!-- <img src="/api/placeholder/400/400" alt="Profile Image" class="profile-img"> -->
-            <h1 class="header-title">Charlie Ratliff</h1>
-            <p class="header-subtitle">Mathematics & Computer Science Portfolio</p>
-            <div class="social-links">
-                <a href="https://github.com/charlierat" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https:www.linkedin.com/in/charlie-ratliff-2024422b7" target="_blank"><i class="fab fa-linkedin"></i></a>
-            </div>
-        </div>
-    </header>
-    
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
     <!-- Navigation -->
     <nav>
-        <div class="container nav-container">
-            <ul class="nav-list">
-                <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="#projects" class="nav-link">Projects</a></li>
-            </ul>
+        <div class="container">
+            <div class="nav-container">
+                <div class="logo">CharlieRatliff</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#work">Work</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
-       
-    <!-- Projects Section -->
-    <section id="projects">
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
         <div class="container">
-            <h2 class="section-title">Projects</h2>
-            <div class="projects-grid">
-                <!-- Project 1 -->
-                <div class="project-card">
-                    <img src="images/cancer_cover_image.png" alt="Project 1" class="project-img">
-                    <div class="project-content">
-                        <h3 class="project-title">Lung Cancer Detection in CT Scans</h3>
-                        <p class="project-description">
-                            Developed an image processing algorithm to detect cancer tumors in CT scans using preprocessing, edge detection, lung segmentation, and feature extraction.
-                        </p>
-                        <div class="project-tags">
-                            <span class="project-tag">Python</span>
-                            <span class="project-tag">Image Processing</span>
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 id="mainHeading">Charlie Ratliff<span class="typing-cursor" id="headingCursor"></span></h1>
+                    <p class="subtitle">Data Engineer and Software Developer</p>
+                    
+                    <div class="expertise-grid">
+                        <div class="expertise-card">
+                            <h3>Frontend Development</h3>
+                            <p>React, Next.js, Vue.js</p>
                         </div>
-                        <div class="project-links">
-                            <a href="https://github.com/charlierat/lung-cancer-detection" target="_blank"><i class="project-link"></i>
-                                <i class="fab fa-github"></i> View Code
-                            </a>
+                        <div class="expertise-card">
+                            <h3>Data Visualization</h3>
+                            <p>HTML, CSS, JavaScript</p>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Project 2 -->
-                <div class="project-card">
-                    <img src="images/datavis_cover_image.png" alt="Project 2" class="project-img">
-                    <div class="project-content">
-                        <h3 class="project-title">Global Airport Flight Routes Data Visualization</h3>
-                        <p class="project-description">
-                            Used D3v6 to create an interactive world map displaying the number of outoing routes from each airport in the world using data from OpenFlights.
-                        </p>
-                        <div class="project-tags">
-                            <span class="project-tag">JavaScript</span>
-                            <span class="project-tag">HTML</span>
-                            <span class="project-tag">CSS</span>
-                            <span class="project-tag">D3v6</span>
+                        <div class="expertise-card">
+                            <h3>Data Engineering</h3>
+                            <p>SQL, Python, Java</p>
                         </div>
-                        <div class="project-links">
-                            <a href="https://github.com/castellanossfelipe/Airport-Connectivity-Visualization/tree/main" class="project-link" target="_blank">
-                                <i class="fab fa-github"></i> View Code
-                            </a>
-                            <a href="https://charlierat.github.io/airport-connectivy-visualization/" class="project-link" target="_blank">
-                                <i class="fas fa-external-link-alt"></i> Visualization
-                            </a>
-                            <a href="pdfs/airport-connectivity-report.pdf" class="project-link" target="_blank">
-                                <i class="fas fa-file-pdf"></i> Write Up
-                            </a>
+                        <div class="expertise-card">
+                            <h3>Image Processing</h3>
+                            <p>PIL, MATLAB, NumPy</p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Project 3 -->
-                <div class="project-card">
-                    <img src="images/snake_cover_image.png" alt="Project 3" class="project-img">
-                    <div class="project-content">
-                        <h3 class="project-title">Custom Snake Game</h3>
-                        <p class="project-description">
-                            Created a modified version of the popular computer game, snake. Designed a customizable version with board size, board color, snake color, game mode, and speed options.
-                        </p>
-                        <div class="project-tags">
-                            <span class="project-tag">JavaScript</span>
-                            <span class="project-tag">HTML</span>
-                            <span class="project-tag">CSS</span>
+                <div class="hero-visual">
+                    <div class="code-snippet">
+                        <span class="code-line"><span class="keyword">const</span> <span class="function">developer</span> = {</span>
+                        <span class="code-line">  <span class="string">name</span>: <span class="string">'Charlie Ratliff'</span>,</span>
+                        <span class="code-line">  <span class="string">college</span>: [<span class="string">'Davidson College'</span>],</span>
+                        <span class="code-line">  <span class="string">year</span>: <span class="string">'2027'</span>,</span>
+                        <span class="code-line">  <span class="function">major</span>: () => <span class="string">'Computer Science(Honors) & Mathematics'</span></span>
+                        <span class="code-line">};</span>
+                        <span class="code-line"></span>
+                        <span class="code-line"><span class="comment">// Relevant Courses: Data Structures, Algorithms, Data Visualization, Machine Learning, Computer Graphics, Image Processing, Differential Equations</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work Experience -->
+    <section id="work" class="work-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Work Experience</h2>
+            </div>
+            
+            <div class="experience-timeline">
+                <div class="experience-item">
+                    <div class="experience-card">
+                        <img src="images/blazers_logo.png" alt="Portland Trail Blazers Logo" class="company-logo">
+                        <div class="experience-header">
+                            <div>
+                                <h3 class="job-title">Quantitative Analyst Intern</h3>
+                                <p class="company">Portland Trail Blazers</p>
+                            </div>
+                            <span class="duration">Summer 2025</span>
                         </div>
-                        <div class="project-links">
-                            <a href="https://github.com/charlierat/snake-game" target="_blank"><i class="project-link"></i>
-                                <i class="fab fa-github"></i> View Code
-                            </a>
-                            <a href="https://charlierat.github.io/snake-game/" target="_blank"><i class="project-link"></i>
-                                <i class="fas fa-external-link-alt"></i> Play Game
-                            </a>
+                        <p class="job-description">
+                            Worked directly with the Head of Basketball Innovation to analyze and interpret complex basketball data, transforming mathematical
+                            models into actionable insights for team strategy and performance optimization. Contributed to the development of data-driven solutions
+                            supporting scouting, player evaluation, and game planning.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">SQL</span>
+                            <span class="tech-tag">PyMC</span>
+                            <span class="tech-tag">Snowflake</span>
+                            <span class="tech-tag">Bayesian Modeling</span>
+                            <span class="tech-tag">Hierarchical Modeling</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="experience-item">
+                    <div class="experience-card">
+                        <img src="images/davidson_logo.png" alt="Davidson College Logo" class="company-logo">
+                        <div class="experience-header">
+                            <div>
+                                <h3 class="job-title">Teaching Assistant - Data Structures</h3>
+                                <p class="company">Davidson College</p>
+                            </div>
+                            <span class="duration">2025 - Present</span>
+                        </div>
+                        <p class="job-description">
+                            Support faculty in the Computer Science Department by grading assignments, providing feedback, and assisting with the facilitation
+                            of lectures and labs. Help students understand core concepts in data structures, including arrays, linked lists, trees,
+                            and algorithms, contributing to a collaborative and effective learning environment.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Java</span>
+                            <span class="tech-tag">Gradescope</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    
+
+    <!-- Featured Projects -->
+    <section id="projects" class="featured-project">
+        <div class="projects-container">
+            <div class="projects-header">
+                <h2 class="projects-title">Featured Projects</h2>
+                <p class="projects-subtitle">Innovative solutions combining data science, visualization, and user experience design</p>
+            </div>
+            
+            <div class="projects-showcase">
+                <!-- Project 1: Cancer Detection -->
+                <div class="project-row">
+                    <div class="project-content">
+                        <span class="project-category">Medical Image Processing</span>
+                        <h3 class="project-title">Cancer Tumor Detection</h3>
+                        <p class="project-description">
+                            Developed a Python-based image processing algorithm using NumPy to analyze CT lung scans and detect potential cancerous tumors. 
+                            Applied advanced techniques such as filtering, edge detection, and feature extraction to identify abnormal structures with 
+                            87% sensitivity rate. Integrated diagnostic indicators to support automated classification and assist in early-stage cancer detection.
+                        </p>
+                        <div class="project-tech-stack">
+                            <span class="project-tech-tag">Python</span>
+                            <span class="project-tech-tag">NumPy</span>
+                            <span class="project-tech-tag">Image Processing</span>
+                            <span class="project-tech-tag">Medical Imaging</span>
+                        </div>
+                        <a href="projects/cancer.html" class="project-link">
+                            Explore Project
+                            <span>→</span>
+                        </a>
+                    </div>
+                    <div class="project-visual">
+                        <div class="project-decoration"></div>
+                        <div class="project-image-container">
+                            <img src="images/cancer_cover_image.png" alt="Cancer Detection Algorithm Results">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2: Airport Visualization -->
+                <div class="project-row">
+                    <div class="project-content">
+                        <span class="project-category">Data Visualization</span>
+                        <h3 class="project-title">Airport Connectivity Visualization</h3>
+                        <p class="project-description">
+                            Created an interactive world map using D3v6 to visualize global airport connectivity patterns. The visualization displays 
+                            the number of outgoing routes from each airport worldwide using comprehensive data from OpenFlights. Features dynamic 
+                            filtering, zoom capabilities, and real-time data exploration tools for aviation analytics.
+                        </p>
+                        <div class="project-tech-stack">
+                            <span class="project-tech-tag">D3.js v6</span>
+                            <span class="project-tech-tag">JavaScript</span>
+                            <span class="project-tech-tag">Data Visualization</span>
+                            <span class="project-tech-tag">CSS</span>
+                            <span class="project-tech-tag">HTML</span>
+                        </div>
+                        <a href="https://charlierat.github.io/airport-connectivy-visualization/" target="_blank" class="project-link">
+                            View Visualization
+                            <span>→</span>
+                        </a>
+                    </div>
+                    <div class="project-visual">
+                        <div class="project-image-container">
+                            <img src="images/datavis_cover_image.png" alt="Airport Connectivity Visualization">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3: Snake Game -->
+                <div class="project-row">
+                    <div class="project-content">
+                        <span class="project-category">Game Development</span>
+                        <h3 class="project-title">Custom Snake Game</h3>
+                        <p class="project-description">
+                            Built a modern take on the classic Snake game with extensive customization options. Features include adjustable board size, 
+                            custom color schemes, multiple game modes, and variable speed settings. Implemented smooth animations, collision detection, 
+                            and a responsive design that works across different screen sizes.
+                        </p>
+                        <div class="project-tech-stack">
+                            <span class="project-tech-tag">JavaScript</span>
+                            <span class="project-tech-tag">HTML</span>
+                            <span class="project-tech-tag">CSS</span>
+                            <span class="project-tech-tag">Game Logic</span>
+                            <span class="project-tech-tag">Animation</span>
+                        </div>
+                        <a href="https://charlierat.github.io/snake-game/" target="_blank" class="project-link">
+                            Play Game
+                            <span>→</span>
+                        </a>
+                    </div>
+                    <div class="project-visual">
+                        <div class="project-decoration"></div>
+                        <div class="project-image-container">
+                            <img src="images/snake_cover_image.png" alt="Custom Snake Game">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="contact-title">Contact Information</h2>
+                <p class="contact-subtitle"> <a href="mailto:charlieratliff2023@gmail.com" class="email"> charlieratliff2023@gmail.com
+                </a></p>
+                
+                <div class="contact-buttons">
+                    <a href="mailto:charlieratliff2023@gmail.com" class="btn btn-primary">
+                        📧 Send Email
+                    </a>
+                    <a href="https://www.linkedin.com/in/charlie-ratliff-2024422b7" target="_blank" class="btn btn-secondary">
+                        LinkedIn Profile
+                    </a>
+                    <a href="https://github.com/charlierat" target="_blank" class="btn btn-primary">
+                        Github Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Typing Animation for Main Heading
+        const mainHeading = document.getElementById('mainHeading');
+        const headingCursor = document.getElementById('headingCursor');
+        let isTyping = false;
+        let hasTyped = false;
+
+        const headingText = "Charlie Ratliff";
+
+        function typeHeading() {
+            if (isTyping || hasTyped) return;
+            isTyping = true;
+            hasTyped = true;
+
+            // Clear heading and show cursor
+            mainHeading.innerHTML = '';
+            const cursorSpan = document.createElement('span');
+            cursorSpan.className = 'typing-cursor active';
+            cursorSpan.id = 'headingCursor';
+            mainHeading.appendChild(cursorSpan);
+
+            let charIndex = 0;
+            
+            function typeNextChar() {
+                if (charIndex < headingText.length) {
+                    // Add character before cursor
+                    const textContent = headingText.substring(0, charIndex + 1);
+                    mainHeading.innerHTML = textContent + '<span class="typing-cursor active" id="headingCursor"></span>';
+                    charIndex++;
+                    
+                    setTimeout(typeNextChar, 80 + Math.random() * 40); // 80-120ms per character
+                } else {
+                    // Typing complete - keep cursor blinking for a bit, then hide it
+                    setTimeout(() => {
+                        mainHeading.innerHTML = headingText;
+                        isTyping = false;
+                    }, 2800);
+                }
+            }
+            
+            // Start typing after a brief delay
+            setTimeout(typeNextChar, 500);
+        }
+
+        // Auto-start the typing animation when page loads
+        window.addEventListener('load', typeHeading);
+
+        // Also trigger on hero section visibility (for users who scroll quickly)
+        const heroSection = document.querySelector('.hero');
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const heroObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !hasTyped) {
+                    setTimeout(typeHeading, 300);
+                }
+            });
+        }, observerOptions);
+
+        heroObserver.observe(heroSection);
+
+        // Custom Cursor - Optimized for performance
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+        
+        let mouseX = 0;
+        let mouseY = 0;
+        let followerX = 0;
+        let followerY = 0;
+
+        // Update mouse position
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Smooth animation loop using requestAnimationFrame
+        function animateCursor() {
+            // Move main cursor instantly
+            cursor.style.transform = `translate(${mouseX - 10}px, ${mouseY - 10}px)`;
+            
+            // Smooth follower with easing
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+            cursorFollower.style.transform = `translate(${followerX - 17.5}px, ${followerY - 17.5}px)`;
+            
+            requestAnimationFrame(animateCursor);
+        }
+        
+        // Start animation loop
+        animateCursor();
+
+        // Add hover effect on interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, .expertise-card, .experience-card, .project-image-container, .project-tech-tag, .btn');
+        
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+                cursorFollower.classList.add('hover');
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+                cursorFollower.classList.remove('hover');
+            });
+        });
+
+        // Add click effect
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('clicking');
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('clicking');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.style.background = 'rgba(10, 10, 11, 0.98)';
+            } else {
+                nav.style.background = 'rgba(10, 10, 11, 0.95)';
+            }
+        });
+
+        // Add animation on scroll
+        const scrollObserverOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-on-scroll');
+                }
+            });
+        }, scrollObserverOptions);
+
+        // Observe elements for animation
+        document.querySelectorAll('.experience-item, .project-row').forEach(el => {
+            scrollObserver.observe(el);
+        });
+
+        // Project image hover effects
+        document.querySelectorAll('.project-image-container').forEach(container => {
+            container.addEventListener('mouseenter', () => {
+                container.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            container.addEventListener('mouseleave', () => {
+                container.style.transform = 'translateY(-10px) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

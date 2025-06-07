@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancer Tumor Detection - Charlie Ratliff</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-cyan: #00d4ff;
+            --primary-dark: #0099cc;
+            --accent-pink: #ff6b9d;
+            --accent-purple: #8b5cf6;
+            --accent-orange: #f59e0b;
+            --dark-bg: #0a0a0b;
+            --darker-bg: #050507;
+            --light-text: #e1e1e6;
+            --muted-text: #b0b0b8;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--light-text);
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Particles */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--primary-cyan);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+
+        .particle:nth-child(1) { width: 4px; height: 4px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 6px; height: 6px; left: 20%; animation-delay: 2s; }
+        .particle:nth-child(3) { width: 3px; height: 3px; left: 30%; animation-delay: 4s; }
+        .particle:nth-child(4) { width: 5px; height: 5px; left: 40%; animation-delay: 6s; }
+        .particle:nth-child(5) { width: 4px; height: 4px; left: 50%; animation-delay: 8s; }
+        .particle:nth-child(6) { width: 6px; height: 6px; left: 60%; animation-delay: 10s; }
+        .particle:nth-child(7) { width: 3px; height: 3px; left: 70%; animation-delay: 12s; }
+        .particle:nth-child(8) { width: 5px; height: 5px; left: 80%; animation-delay: 14s; }
+        .particle:nth-child(9) { width: 4px; height: 4px; left: 90%; animation-delay: 16s; }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.1; }
+            90% { opacity: 0.1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Geometric Background Elements */
+        .geometric-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .geometric-shape {
+            position: absolute;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            animation: rotate 30s linear infinite;
+        }
+
+        .triangle {
+            width: 100px;
+            height: 100px;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 86px solid rgba(255, 107, 157, 0.05);
+            border: none;
+            top: 10%;
+            right: 10%;
+            animation: float-rotate 25s ease-in-out infinite;
+        }
+
+        .circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 2px solid rgba(139, 92, 246, 0.1);
+            top: 60%;
+            left: 5%;
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        .hexagon {
+            width: 80px;
+            height: 80px;
+            background: rgba(245, 158, 11, 0.05);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            top: 30%;
+            right: 5%;
+            animation: float-rotate 20s ease-in-out infinite reverse;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes float-rotate {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(10px) rotate(240deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.1; }
+            50% { transform: scale(1.1) rotate(180deg); opacity: 0.2; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Morphing Back Button */
+        .back-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 2rem;
+            margin-bottom: 3rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--primary-dark));
+            color: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.4);
+            border-radius: 15px;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
+        }
+
+        .back-arrow {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .back-link:hover .back-arrow {
+            transform: translateX(-5px);
+        }
+
+        /* Hero Section with Parallax */
+        .hero-section {
+            position: relative;
+            padding: 4rem 0 6rem;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            animation: rotate 40s linear infinite;
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--accent-pink), var(--accent-purple));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 8s ease-in-out infinite;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--muted-text);
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* Floating Tech Stack */
+        .tech-constellation {
+            position: relative;
+            height: 300px;
+            margin: 4rem 0;
+            perspective: 1000px;
+        }
+
+        .tech-orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbit 20s linear infinite;
+        }
+
+        .tech-orbit:nth-child(1) { animation-duration: 15s; }
+        .tech-orbit:nth-child(2) { animation-duration: 20s; animation-direction: reverse; }
+        .tech-orbit:nth-child(3) { animation-duration: 25s; }
+        .tech-orbit:nth-child(4) { animation-duration: 18s; animation-direction: reverse; }
+        .tech-orbit:nth-child(5) { animation-duration: 22s; }
+        .tech-orbit:nth-child(6) { animation-duration: 27s; animation-direction: reverse; }
+
+        @keyframes orbit {
+            from { transform: translate(-50%, -50%) rotate(0deg) translateX(150px) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg) translateX(150px) rotate(-360deg); }
+        }
+
+        .tech-orbit:nth-child(4) {
+            animation-name: orbit-inner;
+        }
+
+        .tech-orbit:nth-child(5) {
+            animation-name: orbit-outer;
+        }
+
+        .tech-orbit:nth-child(6) {
+            animation-name: orbit-ellipse;
+        }
+
+        @keyframes orbit-inner {
+            from { transform: translate(-50%, -50%) rotate(0deg) translateX(100px) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg) translateX(100px) rotate(-360deg); }
+        }
+
+        @keyframes orbit-outer {
+            from { transform: translate(-50%, -50%) rotate(0deg) translateX(200px) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg) translateX(200px) rotate(-360deg); }
+        }
+
+        @keyframes orbit-ellipse {
+            from { transform: translate(-50%, -50%) rotate(0deg) translateX(120px) translateY(80px) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg) translateX(120px) translateY(80px) rotate(-360deg); }
+        }
+
+        .tech-tag {
+            background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.1));
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--primary-cyan);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tech-tag:hover {
+            transform: translateY(-5px) scale(1.1);
+            background: linear-gradient(135deg, var(--primary-cyan), var(--accent-pink));
+            color: white;
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Results Section */
+        .results-section {
+            margin: 6rem 0;
+            position: relative;
+        }
+
+        .results-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .results-image {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+        }
+
+        .results-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .results-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .results-stat {
+            background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .results-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--accent-pink));
+        }
+
+        .results-stat-number {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .results-stat-label {
+            color: var(--light-text);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-stat-description {
+            color: var(--muted-text);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Mobile responsive for results */
+        @media (max-width: 768px) {
+            .results-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Algorithm Steps with Creative Layout */
+        .algorithm-section {
+            margin: 8rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 4rem;
+            background: linear-gradient(135deg, var(--light-text), var(--primary-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .steps-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .algorithm-step {
+            position: relative;
+            margin-bottom: 4rem;
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .algorithm-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .step-number {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--accent-pink));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            z-index: 2;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+            background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .step-content:hover::before {
+            left: 100%;
+        }
+
+        .step-content.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .algorithm-step:nth-child(even) .step-content {
+            transform: translateY(20px) translateX(20px);
+        }
+
+        .algorithm-step:nth-child(even) .step-content.visible {
+            transform: translateY(0) translateX(0);
+        }
+
+        .step-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-cyan);
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .step-description {
+            color: var(--muted-text);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 0.8rem;
+            color: var(--light-text);
+            transition: color 0.3s ease;
+        }
+
+        .step-list li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: var(--accent-pink);
+            font-size: 0.8rem;
+            animation: pulse-arrow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-arrow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .step-list li:hover {
+            color: var(--primary-cyan);
+        }
+
+        /* Performance Dashboard */
+        .performance-section {
+            margin: 8rem 0;
+            background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+            padding: 4rem 2rem;
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .performance-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--accent-pink), var(--accent-purple), var(--accent-orange));
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            will-change: transform;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--accent-pink));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-cyan);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            color: var(--muted-text);
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        /* Future Section with Cards */
+        .future-section {
+            margin: 8rem 0;
+        }
+
+        .future-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .future-card {
+            background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            will-change: transform;
+        }
+
+        .future-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .future-card:hover::before {
+            opacity: 1;
+        }
+
+        .future-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-cyan);
+        }
+
+        .future-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .future-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--light-text);
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .future-description {
+            color: var(--muted-text);
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            margin: 6rem 0;
+            position: relative;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--primary-cyan), var(--accent-pink));
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.3);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0, 212, 255, 0.5);
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        /* Custom Cursor */
+        * { cursor: none; }
+        
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            will-change: transform;
+            mix-blend-mode: difference;
+            transition: all 0.1s ease;
+        }
+        
+        .cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-cyan);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px var(--primary-cyan);
+        }
+        
+        .cursor-follower {
+            position: fixed;
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 212, 255, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            will-change: transform;
+            transition: transform 0.15s ease-out, background-color 0.15s ease;
+        }
+        
+        .cursor.hover {
+            border-color: var(--accent-pink);
+            transform: scale(1.3);
+        }
+        
+        .cursor.hover::before {
+            background: var(--accent-pink);
+            box-shadow: 0 0 12px var(--accent-pink);
+        }
+        
+        .cursor-follower.hover {
+            background: rgba(255, 107, 157, 0.12);
+            transform: scale(1.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container { padding: 1rem 15px; }
+            .hero-title { font-size: 2.5rem; }
+            .algorithm-step { flex-direction: column !important; }
+            .algorithm-step:nth-child(even) { flex-direction: column !important; }
+            .step-number { position: relative; margin-bottom: 1rem; }
+            .steps-line { display: none; }
+            .tech-constellation { height: 200px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .future-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Hide cursor on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .cursor, .cursor-follower { display: none; }
+            * { cursor: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Animated Background -->
+    <div class="bg-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="geometric-bg">
+        <div class="triangle"></div>
+        <div class="circle"></div>
+        <div class="hexagon"></div>
+    </div>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">
+            <span class="back-arrow">←</span>
+            Back to Portfolio
+        </a>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Cancer Detection Algorithm</h1>
+                <p class="hero-subtitle">
+                    Revolutionizing early cancer detection through advanced image processing. 
+                    This algorithm assists medical professionals in identifying potential lung cancer nodules, 
+                    potentially saving thousands of lives through early intervention.
+                </p>
+            </div>
+        </section>
+
+        <!-- Floating Tech Stack -->
+        <div class="tech-constellation">
+            <div class="tech-orbit">
+                <div class="tech-tag">Python</div>
+            </div>
+            <div class="tech-orbit">
+                <div class="tech-tag">NumPy</div>
+            </div>
+            <div class="tech-orbit">
+                <div class="tech-tag">Computer Vision</div>
+            </div>
+            <div class="tech-orbit">
+                <div class="tech-tag">Image Processing</div>
+            </div>
+            <div class="tech-orbit">
+                <div class="tech-tag">Medical Imaging</div>
+            </div>
+        </div>
+
+        <!-- Algorithm Steps -->
+        <section class="algorithm-section">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-container">
+                <div class="algorithm-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">preprocessing()</h3>
+                        <p class="step-description">
+                            Advanced noise reduction and image enhancement using multiple filtering techniques 
+                            to prepare CT scans for accurate analysis.
+                        </p>
+                        <ul class="step-list">
+                            <li>Gaussian filter for background noise reduction</li>
+                            <li>Median filter eliminates salt-and-pepper artifacts</li>
+                            <li>Non-local-means preserves crucial edge details</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="algorithm-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">lungSegmentation()</h3>
+                        <p class="step-description">
+                            Intelligent isolation of lung regions using advanced segmentation algorithms 
+                            to focus analysis on relevant anatomical areas.
+                        </p>
+                        <ul class="step-list">
+                            <li>Automatic lung boundary detection</li>
+                            <li>Region of interest isolation</li>
+                            <li>Anatomical structure preservation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="algorithm-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">noduleDetection()</h3>
+                        <p class="step-description">
+                            Sophisticated pattern recognition to identify potential cancerous nodules 
+                            based on density, shape, and texture characteristics.
+                        </p>
+                        <ul class="step-list">
+                            <li>Density-based candidate identification</li>
+                            <li>Shape and morphology analysis</li>
+                            <li>False positive reduction algorithms</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="algorithm-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">featureExtraction()</h3>
+                        <p class="step-description">
+                            Comprehensive analysis of nodule characteristics to determine malignancy risk 
+                            using multiple quantitative features.
+                        </p>
+                        <ul class="step-list">
+                            <li>Area calculation and size assessment</li>
+                            <li>Calcification percentage analysis</li>
+                            <li>Shape irregularity and solidity metrics</li>
+                            <li>Texture and density pattern evaluation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="algorithm-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3 class="step-title">riskAssessment()</h3>
+                        <p class="step-description">
+                            Machine learning-powered risk calculation that prioritizes nodules 
+                            by their probability of malignancy for medical review.
+                        </p>
+                        <ul class="step-list">
+                            <li>Multi-feature risk scoring algorithm</li>
+                            <li>Probability ranking and prioritization</li>
+                            <li>Clinical decision support output</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <h2 class="section-title">Algorithm Results</h2>
+            <div class="results-container">
+                <div class="results-image">
+                    <img src="../images/cancer_cover_image.png" alt="Cancer Detection Algorithm Results">
+                </div>
+                <div class="results-content">
+                    <div class="results-stat">
+                        <div class="results-stat-number">95%</div>
+                        <div class="results-stat-label">Likelihood of Cancer Found</div>
+                        <div class="results-stat-description">
+                            Advanced learning algorithms analyze multiple nodule characteristics 
+                            to provide accurate cancer probability assessment for medical professionals.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Dashboard -->
+        <section class="performance-section">
+            <h2 class="section-title">Performance Metrics</h2>
+            <p style="text-align: center; color: var(--muted-text); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Rigorously tested on comprehensive datasets with clinically validated results from the cancer imaging archive
+            </p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">87%</div>
+                    <div class="stat-label">Sensitivity Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">300+</div>
+                    <div class="stat-label">CT Scans Analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1.8s</div>
+                    <div class="stat-label">Average Processing Time</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Future Developments -->
+        <section class="future-section">
+            <h2 class="section-title">Future Innovations</h2>
+            <div class="future-grid">
+                <div class="future-card">
+                    <div class="future-icon">🧠</div>
+                    <h3 class="future-title">Deep Learning Integration</h3>
+                    <p class="future-description">
+                        Implementing convolutional neural networks and transformer architectures 
+                        to achieve superhuman accuracy in cancer detection and reduce false positives.
+                    </p>
+                </div>
+                
+                <div class="future-card">
+                    <div class="future-icon">📊</div>
+                    <h3 class="future-title">3D Volume Analysis</h3>
+                    <p class="future-description">
+                        Expanding to full 3D volumetric analysis across multiple CT slices 
+                        for comprehensive tumor assessment and growth tracking over time.
+                    </p>
+                </div>
+                
+                <div class="future-card">
+                    <div class="future-icon">🏥</div>
+                    <h3 class="future-title">Clinical Interface</h3>
+                    <p class="future-description">
+                        Developing an intuitive web-based platform for medical professionals 
+                        with real-time analysis, reporting tools, and seamless DICOM integration.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="cta-section">
+            <a href="https://github.com/charlierat/lung-cancer-detection" target="_blank" class="cta-button">
+                <span>Explore the Code</span>
+                <span>→</span>
+            </a>
+        </section>
+    </div>
+
+    <script>
+        // Custom Cursor System
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+        
+        let mouseX = 0, mouseY = 0;
+        let followerX = 0, followerY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        function animateCursor() {
+            cursor.style.transform = `translate(${mouseX - 10}px, ${mouseY - 10}px)`;
+            
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+            cursorFollower.style.transform = `translate(${followerX - 17.5}px, ${followerY - 17.5}px)`;
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+        
+        // Interactive Elements
+        const interactiveElements = document.querySelectorAll('a, .tech-tag, .stat-card, .future-card, .step-content');
+        
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+                cursorFollower.classList.add('hover');
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+                cursorFollower.classList.remove('hover');
+            });
+        });
+        
+        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+
+        // Scroll Animations
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.step-content').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Future Card Mouse Tracking
+        document.querySelectorAll('.future-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                
+                card.style.setProperty('--x', x + '%');
+                card.style.setProperty('--y', y + '%');
+            });
+        });
+
+        // Parallax Effect for Hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroSection = document.querySelector('.hero-section');
+            const parallaxElements = document.querySelectorAll('.geometric-shape');
+            
+            if (heroSection) {
+                heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+            
+            parallaxElements.forEach((el, index) => {
+                const speed = 0.3 + (index * 0.1);
+                el.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Tech Orbit Click Effects
+        document.querySelectorAll('.tech-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                tag.style.animation = 'none';
+                tag.offsetHeight; // Trigger reflow
+                tag.style.animation = null;
+                
+                // Add ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(0, 212, 255, 0.3);
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    pointer-events: none;
+                `;
+                
+                const rect = tag.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (rect.width / 2 - size / 2) + 'px';
+                ripple.style.top = (rect.height / 2 - size / 2) + 'px';
+                
+                tag.style.position = 'relative';
+                tag.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Performance Counter Animation
+        const counters = document.querySelectorAll('.stat-number');
+        
+        const animateCounters = () => {
+            counters.forEach(counter => {
+                const target = counter.textContent;
+                const isPercentage = target.includes('%');
+                const isTime = target.includes('s');
+                const isLarge = target.includes('+');
+                
+                let targetNum;
+                if (isPercentage) {
+                    targetNum = parseInt(target);
+                } else if (isTime) {
+                    targetNum = parseFloat(target);
+                } else if (isLarge) {
+                    targetNum = parseInt(target.replace('+', ''));
+                } else {
+                    targetNum = parseInt(target);
+                }
+                
+                let current = 0;
+                const increment = targetNum / 100;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= targetNum) {
+                        current = targetNum;
+                        clearInterval(timer);
+                    }
+                    
+                    if (isPercentage) {
+                        counter.textContent = Math.floor(current) + '%';
+                    } else if (isTime) {
+                        counter.textContent = current.toFixed(1) + 's';
+                    } else if (isLarge) {
+                        counter.textContent = Math.floor(current).toLocaleString() + '+';
+                    } else {
+                        counter.textContent = Math.floor(current) + '%';
+                    }
+                }, 20);
+            });
+        };
+
+        // Trigger counter animation when performance section is visible
+        const performanceObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    performanceObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: .4 });
+
+        const performanceSection = document.querySelector('.performance-section');
+        if (performanceSection) {
+            performanceObserver.observe(performanceSection);
+        }
+    </script>
+</body>
+</html>
