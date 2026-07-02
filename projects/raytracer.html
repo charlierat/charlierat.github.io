@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multithreaded Ray Tracing Engine — Charlie Ratliff</title>
+    <meta name="description" content="A CPU ray tracer built from scratch in C# — full OBJ/MTL parsing, Phong illumination, and BVH acceleration rendering 330K+ triangle scenes in under 60 seconds.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        .demo-frame {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: #070b12;
+            overflow: hidden;
+            box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.65);
+            margin-top: 2.5rem;
+        }
+        .demo-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.015);
+        }
+        .demo-bar .dot { width: 9px; height: 9px; border-radius: 50%; background: #232d3d; }
+        .demo-bar .label {
+            margin-left: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+        .demo-bar .live {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.18em;
+            color: #ff5470;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .demo-bar .live::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #ff5470;
+            box-shadow: 0 0 8px rgba(255, 84, 112, 0.9);
+        }
+        .demo-body { position: relative; aspect-ratio: 16 / 8.2; }
+        .demo-body canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+        .demo-caption {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 1rem;
+            max-width: 720px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="site-nav" aria-label="Main navigation">
+        <div class="container nav-inner">
+            <a class="wordmark" href="../index.html"><span class="sigil"></span>charlie<em>.</em>ratliff</a>
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="../index.html#experience">Experience</a></li>
+                <li><a href="../index.html#projects">Projects</a></li>
+                <li><a href="../index.html#skills">Skills</a></li>
+                <li><a class="nav-cta" href="mailto:charlieratliff2023@gmail.com">get_in_touch()</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="detail-hero">
+        <div class="container">
+            <a href="../index.html#projects" class="breadcrumb"><span class="arrow">←</span> All projects</a>
+            <h1 class="detail-title">Multithreaded Ray Tracing Engine</h1>
+            <p class="detail-summary">
+                A CPU renderer written from scratch in C# — no engines, no graphics
+                libraries — that parses arbitrary Wavefront OBJ/MTL scenes and produces
+                physically-plausible images with reflections, textures, and smooth shading.
+                A custom Bounding Volume Hierarchy takes renders that would run for hours
+                down to under a minute.
+            </p>
+            <div class="tag-row">
+                <span class="tag">C#</span>
+                <span class="tag">Multithreading</span>
+                <span class="tag">BVH Acceleration</span>
+                <span class="tag">Phong Illumination</span>
+                <span class="tag">Bilinear Texture Filtering</span>
+                <span class="tag">OBJ/MTL Parsing</span>
+            </div>
+            <div class="detail-meta">
+                <div class="meta-item"><h4>Role</h4><p>Sole developer</p></div>
+                <div class="meta-item"><h4>Timeline</h4><p>Fall 2025</p></div>
+                <div class="meta-item"><h4>Domain</h4><p>Offline rendering</p></div>
+                <div class="meta-item"><h4>Scale</h4><p>330K+ triangles @ 2048×2048</p></div>
+            </div>
+        </div>
+    </header>
+
+    <section class="detail-section">
+        <div class="container">
+            <h2><span class="idx">/01</span> Live demonstration</h2>
+            <p>
+                The panel below is a miniature GPU port of the engine's core algorithm —
+                sphere intersection, hard shadows, Phong highlights, and multi-bounce
+                reflections — running as a fragment shader at 60fps. The full C# engine
+                applies the same ray-scene logic to arbitrary triangle meshes.
+            </p>
+            <div class="demo-frame reveal">
+                <div class="demo-bar">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                    <span class="label">raytracer.frag — 3 bounces, checkered ground, animated scene</span>
+                    <span class="live">LIVE</span>
+                </div>
+                <div class="demo-body"><canvas id="rtCanvas"></canvas></div>
+            </div>
+            <p class="demo-caption">
+                Every pixel you see is an independently traced ray: primary hit → shadow
+                ray → up to two reflection bounces, gamma-corrected. No rasterization,
+                no triangles — pure ray-scene intersection.
+            </p>
+        </div>
+    </section>
+
+    <section class="detail-section">
+        <div class="container">
+            <h2><span class="idx">/02</span> Why build a ray tracer by hand?</h2>
+            <p>
+                Ray tracing is the clearest way to prove you understand rendering at
+                first principles: camera models, intersection geometry, shading math,
+                texture sampling, and — most importantly — the data structures that make
+                it all tractable. Everything here is implemented directly: the vector
+                math, the file parsers, the acceleration structure, the thread scheduler.
+            </p>
+            <p>
+                The engine ingests any standard Wavefront OBJ scene with its MTL material
+                library, so it renders real-world assets — not toy hardcoded scenes.
+            </p>
+        </div>
+    </section>
+
+    <section class="detail-section">
+        <div class="container">
+            <h2><span class="idx">/03</span> Architecture</h2>
+            <div class="card-grid">
+                <div class="info-card reveal">
+                    <span class="mono-label">parser/</span>
+                    <h3>Full OBJ/MTL ingestion</h3>
+                    <p>Parses vertices, texture coordinates, per-vertex normals, face groups, and material definitions — including diffuse/specular maps — into an indexed triangle soup ready for tracing.</p>
+                </div>
+                <div class="info-card reveal">
+                    <span class="mono-label">accel/</span>
+                    <h3>Bounding Volume Hierarchy</h3>
+                    <p>Median-split BVH over axis-aligned bounding boxes. Ray traversal skips entire subtrees on a missed box test, turning O(n) scene intersection into roughly O(log n).</p>
+                </div>
+                <div class="info-card reveal">
+                    <span class="mono-label">shading/</span>
+                    <h3>Phong + textures</h3>
+                    <p>Ambient, diffuse, and specular terms with material colors sampled from texture maps via bilinear filtering. Barycentric interpolation of vertex normals gives smooth shading across coarse meshes.</p>
+                </div>
+                <div class="info-card reveal">
+                    <span class="mono-label">render/</span>
+                    <h3>Multithreaded tiling</h3>
+                    <p>The image is divided into tiles dispatched across all available cores. Rendering is embarrassingly parallel — throughput scales nearly linearly with thread count.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-section">
+        <div class="container">
+            <h2><span class="idx">/04</span> The BVH is the whole ballgame</h2>
+            <p>
+                A naive tracer tests every ray against every triangle. At 2048×2048 —
+                over four million primary rays — against 330,000 triangles, that is more
+                than a trillion intersection tests before shadows or reflections. The BVH
+                collapses this by wrapping the scene in a binary tree of bounding boxes:
+            </p>
+            <div class="code-block" data-label="C#">
+<span class="kw">private</span> Hit? <span class="fn">Traverse</span>(BvhNode node, Ray ray, <span class="kw">float</span> tMax)
+{
+    <span class="kw">if</span> (!node.Bounds.<span class="fn">Intersects</span>(ray, tMax)) <span class="kw">return</span> <span class="kw">null</span>;  <span class="cm">// prune the whole subtree</span>
+
+    <span class="kw">if</span> (node.IsLeaf)
+        <span class="kw">return</span> <span class="fn">ClosestTriangleHit</span>(node.Triangles, ray, tMax);
+
+    Hit? left  = <span class="fn">Traverse</span>(node.Left,  ray, tMax);
+    Hit? right = <span class="fn">Traverse</span>(node.Right, ray, left?.T ?? tMax);
+    <span class="kw">return</span> right ?? left;
+}</div>
+            <p style="margin-top: 1.6rem">
+                Combined with tile-based multithreading, the result: scenes that ran for
+                hours render in <strong style="color: var(--ink)">under 60 seconds</strong>.
+            </p>
+            <div class="stat-band">
+                <div class="stat-cell reveal"><span class="value">330K+</span><span class="label">triangles per scene</span></div>
+                <div class="stat-cell reveal"><span class="value">2048²</span><span class="label">output resolution</span></div>
+                <div class="stat-cell reveal"><span class="value">&lt;60s</span><span class="label">full render time</span></div>
+                <div class="stat-cell reveal"><span class="value">~4.2M</span><span class="label">primary rays traced</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-section">
+        <div class="container">
+            <h2><span class="idx">/05</span> What it demonstrates</h2>
+            <div class="card-grid">
+                <div class="info-card reveal">
+                    <h3>Rendering fundamentals</h3>
+                    <p>Camera ray generation, intersection geometry, illumination models, and texture sampling implemented from the math up — the same foundations behind production renderers.</p>
+                </div>
+                <div class="info-card reveal">
+                    <h3>Performance engineering</h3>
+                    <p>Spatial data structures, cache-conscious traversal, and parallel work scheduling — the difference between a correct renderer and a usable one.</p>
+                </div>
+                <div class="info-card reveal">
+                    <h3>Robust file ingestion</h3>
+                    <p>Handling real-world OBJ/MTL assets means tolerating the format's quirks: negative indices, mixed face arities, missing normals, and multi-material groups.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="detail-cta">
+            <div>
+                <h3>Want to talk rendering?</h3>
+                <p>I'm open to graphics and rendering engineering roles.</p>
+            </div>
+            <a href="mailto:charlieratliff2023@gmail.com" class="btn btn-primary">Get in touch <span class="arrow">→</span></a>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>© <span id="year"></span> Charlie Ratliff — designed &amp; rendered by hand.</p>
+            <div class="footer-links">
+                <a href="https://github.com/charlierat" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://www.linkedin.com/in/charlie-ratliff-2024422b7" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="mailto:charlieratliff2023@gmail.com">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        var canvas = document.getElementById('rtCanvas');
+        var gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+        if (!gl) return;
+
+        var vertSrc = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+        var fragSrc = [
+            'precision highp float;',
+            'uniform vec2 uRes; uniform float uTime;',
+            'const int NS = 3;',
+            'float iSphere(vec3 ro, vec3 rd, vec4 s){',
+            '  vec3 oc = ro - s.xyz;',
+            '  float b = dot(oc, rd);',
+            '  float c = dot(oc, oc) - s.w * s.w;',
+            '  float h = b * b - c;',
+            '  if (h < 0.0) return -1.0;',
+            '  return -b - sqrt(h);',
+            '}',
+            'void scene(float t, out vec4 sph[NS], out vec3 alb[NS], out float refl[NS]){',
+            '  sph[0] = vec4(0.0, 1.05, 0.0, 1.05); alb[0] = vec3(0.95); refl[0] = 0.85;',
+            '  sph[1] = vec4(1.9, 0.55 + 0.35 * abs(sin(t * 1.4)), 1.1, 0.55); alb[1] = vec3(0.10, 0.75, 0.90); refl[1] = 0.35;',
+            '  sph[2] = vec4(-1.8, 0.45, 1.4, 0.45); alb[2] = vec3(0.55, 0.50, 1.00); refl[2] = 0.25;',
+            '}',
+            'float trace(vec3 ro, vec3 rd, vec4 sph[NS], out int id){',
+            '  float tmin = 1e9; id = -1;',
+            '  for (int i = 0; i < NS; i++){',
+            '    float t = iSphere(ro, rd, sph[i]);',
+            '    if (t > 0.001 && t < tmin){ tmin = t; id = i; }',
+            '  }',
+            '  if (rd.y < -0.0001){',
+            '    float t = -ro.y / rd.y;',
+            '    if (t > 0.001 && t < tmin){ tmin = t; id = 99; }',
+            '  }',
+            '  return tmin;',
+            '}',
+            'vec3 sky(vec3 rd){',
+            '  float h = max(rd.y, 0.0);',
+            '  return mix(vec3(0.045, 0.075, 0.110), vec3(0.010, 0.016, 0.028), h) + vec3(0.10, 0.28, 0.36) * pow(1.0 - h, 6.0) * 0.25;',
+            '}',
+            'void main(){',
+            '  vec2 uv = (gl_FragCoord.xy * 2.0 - uRes) / uRes.y;',
+            '  float t = uTime * 0.35;',
+            '  vec4 sph[NS]; vec3 alb[NS]; float refl[NS];',
+            '  scene(uTime, sph, alb, refl);',
+            '  vec3 ro = vec3(cos(t) * 5.2, 1.9, sin(t) * 5.2);',
+            '  vec3 ta = vec3(0.0, 0.75, 0.0);',
+            '  vec3 fw = normalize(ta - ro);',
+            '  vec3 rt = normalize(cross(fw, vec3(0.0, 1.0, 0.0)));',
+            '  vec3 up = cross(rt, fw);',
+            '  vec3 rd = normalize(fw * 1.7 + rt * uv.x + up * uv.y);',
+            '  vec3 L = normalize(vec3(0.55, 0.85, -0.35));',
+            '  vec3 col = vec3(0.0);',
+            '  vec3 att = vec3(1.0);',
+            '  for (int bounce = 0; bounce < 3; bounce++){',
+            '    int id; float th = trace(ro, rd, sph, id);',
+            '    if (id == -1){ col += att * sky(rd); break; }',
+            '    vec3 pos = ro + rd * th;',
+            '    vec3 nor; vec3 base; float kr;',
+            '    if (id == 99){',
+            '      nor = vec3(0.0, 1.0, 0.0);',
+            '      float chk = mod(floor(pos.x * 1.1) + floor(pos.z * 1.1), 2.0);',
+            '      base = mix(vec3(0.030, 0.045, 0.065), vec3(0.100, 0.140, 0.180), chk);',
+            '      kr = 0.22;',
+            '    } else {',
+            '      vec4 s = sph[0]; vec3 a = alb[0]; float r0 = refl[0];',
+            '      if (id == 1){ s = sph[1]; a = alb[1]; r0 = refl[1]; }',
+            '      if (id == 2){ s = sph[2]; a = alb[2]; r0 = refl[2]; }',
+            '      nor = normalize(pos - s.xyz);',
+            '      base = a; kr = r0;',
+            '    }',
+            '    int sid; float st = trace(pos + nor * 0.002, L, sph, sid);',
+            '    float shadow = (sid == -1 || sid == 99) ? 1.0 : 0.15;',
+            '    if (sid == 99) shadow = 1.0;',
+            '    float dif = max(dot(nor, L), 0.0) * shadow;',
+            '    float amb = 0.16 + 0.10 * nor.y;',
+            '    vec3 hv = normalize(L - rd);',
+            '    float spe = pow(max(dot(nor, hv), 0.0), 60.0) * shadow;',
+            '    col += att * (base * (dif * vec3(1.0, 0.96, 0.90) + amb * vec3(0.35, 0.55, 0.70)) + spe * 0.7);',
+            '    att *= kr * base + kr * 0.25;',
+            '    if (att.x + att.y + att.z < 0.02) break;',
+            '    rd = reflect(rd, nor);',
+            '    ro = pos + nor * 0.002;',
+            '  }',
+            '  col = pow(col, vec3(0.4545));',
+            '  vec2 vg = gl_FragCoord.xy / uRes - 0.5;',
+            '  col *= 1.0 - dot(vg, vg) * 0.55;',
+            '  gl_FragColor = vec4(col, 1.0);',
+            '}'
+        ].join('\n');
+
+        function compile(type, src) {
+            var s = gl.createShader(type);
+            gl.shaderSource(s, src);
+            gl.compileShader(s);
+            if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+                console.error(gl.getShaderInfoLog(s));
+                return null;
+            }
+            return s;
+        }
+        var vs = compile(gl.VERTEX_SHADER, vertSrc);
+        var fs = compile(gl.FRAGMENT_SHADER, fragSrc);
+        if (!vs || !fs) return;
+        var prog = gl.createProgram();
+        gl.attachShader(prog, vs);
+        gl.attachShader(prog, fs);
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        var loc = gl.getAttribLocation(prog, 'p');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        var uRes = gl.getUniformLocation(prog, 'uRes');
+        var uTime = gl.getUniformLocation(prog, 'uTime');
+
+        SiteFX.register(canvas, function (t) {
+            SiteFX.fitCanvas(canvas, 1.4);
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            gl.uniform2f(uRes, canvas.width, canvas.height);
+            gl.uniform1f(uTime, t * 0.001);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+        });
+    })();
+    </script>
+</body>
+</html>
